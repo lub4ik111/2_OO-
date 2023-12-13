@@ -1,0 +1,148 @@
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+class Hotel
+{
+
+    private List<Room> rooms;
+
+    public Hotel()
+    {
+        rooms = new List<Room>();
+    }
+
+    public void AddRoom(Room room)
+    {
+        rooms.Add(room);
+    }
+
+    public Room FindAvailableRoom(RoomType type, int numberOfBeds)
+    {
+        return rooms.FirstOrDefault(room => room.Type == type && room.NumberOfBeds == numberOfBeds && !room.IsOccupied);
+    }
+
+    public void CheckInGuest(string guestName, RoomType roomType, int numberOfBeds)
+    {
+        Room availableRoom = FindAvailableRoom(roomType, numberOfBeds);
+
+        if (availableRoom != null)
+        {
+            availableRoom.CheckIn(guestName);
+            Console.WriteLine($"Guest {guestName} checked into Room {availableRoom.RoomNumber}.");
+        }
+        else
+        {
+            Console.WriteLine("No available room matching your criteria.");
+        }
+    }
+
+    public void CheckOutGuest(string guestName)
+    {
+        Room occupiedRoom = rooms.FirstOrDefault(room => room.IsOccupied && room.CurrentGuestName == guestName);
+
+        if (occupiedRoom != null)
+        {
+            double totalBill = occupiedRoom.CheckOut();
+            Console.WriteLine($"Guest {guestName} checked out of Room {occupiedRoom.RoomNumber}. Total bill: ${totalBill}");
+        }
+        else
+        {
+            Console.WriteLine($"Guest {guestName} is not checked into any room.");
+        }
+    }
+}
+
+class Room
+{
+    public int RoomNumber { get; private set; }
+    public RoomType Type { get; private set; }
+    public int NumberOfBeds { get; private set; }
+    public bool IsOccupied { get; private set; }
+    public string CurrentGuestName { get; private set; }
+    private double nightlyRate = 100.00;
+
+    public Room(int roomNumber, RoomType type, int numberOfBeds)
+    {
+        RoomNumber = roomNumber;
+        Type = type;
+        NumberOfBeds = numberOfBeds;
+    }
+
+    public void CheckIn(string guestName)
+    {
+        IsOccupied = true;
+        CurrentGuestName = guestName;
+    }
+
+    public double CheckOut()
+    {
+        IsOccupied = false;
+        string input;
+
+        Console.Write($"Enter the number of nights for {CurrentGuestName}'s stay: ");
+        input = Console.ReadLine();
+        int numberOfNights = int.Parse(input);
+
+        double totalBill = numberOfNights * nightlyRate;
+        CurrentGuestName = null;
+
+        return totalBill;
+    }
+}
+
+enum RoomType
+{
+    Superior,
+    Deluxe,
+    Standard
+}
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        Console.OutputEncoding = System.Text.Encoding.Default;
+        Hotel hotel = new Hotel();
+
+        hotel.AddRoom(new Room(101, RoomType.Superior, 2));
+        hotel.AddRoom(new Room(102, RoomType.Deluxe, 3));
+        hotel.AddRoom(new Room(103, RoomType.Standard, 1));
+
+        while (true)
+        {
+            Console.WriteLine("\nHotel Management System Menu:");
+            Console.WriteLine("1. Check-in guest");
+            Console.WriteLine("2. Check-out guest");
+            Console.WriteLine("3. Exit");
+            Console.Write("Enter your choice: ");
+
+            string choice = Console.ReadLine();
+
+            switch (choice)
+            {
+                case "1":
+                    Console.Write("Enter guest name: ");
+                    string guestName = Console.ReadLine();
+                    Console.Write("Enter room type (Superior/Deluxe/Standard): ");
+                    RoomType roomType = (RoomType)Enum.Parse(typeof(RoomType), Console.ReadLine());
+                    Console.Write("Enter number of beds: ");
+                    int numberOfBeds = int.Parse(Console.ReadLine());
+                    hotel.CheckInGuest(guestName, roomType, numberOfBeds);
+                    break;
+                case "2":
+                    Console.Write("Enter guest name to check out: ");
+                    string guestToCheckOut = Console.ReadLine();
+                    hotel.CheckOutGuest(guestToCheckOut);
+                    break;
+                case "3":
+                    Environment.Exit(0);
+                    break;
+                default:
+                    Console.WriteLine("Invalid choice. Please try again.");
+                    break;
+            }
+        }
+    }
+}
