@@ -1,0 +1,79 @@
+
+using System;
+using System.Linq;
+using System.Text.RegularExpressions;
+
+class Count
+{
+    static void Main()
+    {
+        Console.OutputEncoding = System.Text.Encoding.Default;
+        Console.WriteLine("Введіть текстовий рядок:");
+        string inputText = Console.ReadLine();
+
+        string[] words = Regex.Split(inputText, @"\s+");
+
+        int countWordsWithEqualVowelsAndConsonants = 0;
+        string longestWord = "";
+        int maxLength = 0;
+
+        for (int i = 0; i < words.Length; i++)
+        {
+            string word = words[i];
+            word = word.Trim(new char[] { '.', ',', '!', '?', ':', ';' }); 
+
+            if (IsWordWithEqualVowelsAndConsonants(word))
+            {
+                countWordsWithEqualVowelsAndConsonants++;
+            }
+
+            if (word.Length > maxLength)
+            {
+                maxLength = word.Length;
+                longestWord = word;
+            }
+
+            if (IsPalindrome(word))
+            {
+                words[i] = ""; // Видалення паліндромів
+            }
+        }
+
+        // Виведення результатів
+        Console.WriteLine($"Кількість слів з однаковою кількістю голосних і приголосних літер: {countWordsWithEqualVowelsAndConsonants}");
+        Console.WriteLine($"Найдовше слово: {longestWord}");
+
+        Console.WriteLine("Текст без паліндромів:");
+        Console.WriteLine(string.Join(" ", words));
+    }
+
+    static bool IsWordWithEqualVowelsAndConsonants(string word)
+    {
+        int vowelsCount = 0;
+        int consonantsCount = 0;
+        string vowels = "aeiouAEIOU";
+
+        foreach (char c in word)
+        {
+            if (Char.IsLetter(c))
+            {
+                if (vowels.Contains(c))
+                {
+                    vowelsCount++;
+                }
+                else
+                {
+                    consonantsCount++;
+                }
+            }
+        }
+
+        return vowelsCount == consonantsCount;
+    }
+
+    static bool IsPalindrome(string word)
+    {
+        string reversed = new string(word.Reverse().ToArray());
+        return word.Equals(reversed, StringComparison.OrdinalIgnoreCase);
+    }
+}
