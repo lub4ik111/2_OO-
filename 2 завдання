@@ -1,0 +1,113 @@
+
+using System;
+
+class Program
+{
+
+
+    static void Main()
+    {
+        Console.OutputEncoding = System.Text.Encoding.Default;
+        Console.Write("Введіть кількість рядків матриці: ");
+        int rows = int.Parse(Console.ReadLine());
+
+        Console.Write("Введіть кількість стовпців матриці: ");
+        int columns = int.Parse(Console.ReadLine());
+
+        int[,] matrix = new int[rows, columns];
+
+        // Заповнення матриці користувачем
+        for (int i = 0; i < rows; i++)
+        {
+            for (int j = 0; j < columns; j++)
+            {
+                Console.Write($"Введіть елемент [{i},{j}]: ");
+                matrix[i, j] = int.Parse(Console.ReadLine());
+            }
+        }
+
+        // Визначення кількості однакових елементів у кожному рядку
+        int[] rowElementCounts = new int[rows];
+
+        for (int i = 0; i < rows; i++)
+        {
+            for (int j = 0; j < columns; j++)
+            {
+                for (int k = j + 1; k < columns; k++)
+                {
+                    if (matrix[i, j] == matrix[i, k])
+                    {
+                        rowElementCounts[i]++;
+                    }
+                }
+            }
+        }
+
+        // Сортування рядків за зростанням кількості однакових елементів
+        for (int i = 0; i < rows - 1; i++)
+        {
+            for (int j = 0; j < rows - 1 - i; j++)
+            {
+                if (rowElementCounts[j] > rowElementCounts[j + 1])
+                {
+                    // Обмін рядків
+                    int temp;
+                    for (int k = 0; k < columns; k++)
+                    {
+                        temp = matrix[j, k];
+                        matrix[j, k] = matrix[j + 1, k];
+                        matrix[j + 1, k] = temp;
+                    }
+
+                    // Обмін кількостей однакових елементів
+                    temp = rowElementCounts[j];
+                    rowElementCounts[j] = rowElementCounts[j + 1];
+                    rowElementCounts[j + 1] = temp;
+                }
+            }
+        }
+
+        // Знаходження номера першого стовпця без від'ємних елементів
+        int firstNonNegativeColumn = -1;
+
+        for (int j = 0; j < columns; j++)
+        {
+            bool hasNegative = false;
+            for (int i = 0; i < rows; i++)
+            {
+                if (matrix[i, j] < 0)
+                {
+                    hasNegative = true;
+                    break;
+                }
+            }
+
+            if (!hasNegative)
+            {
+                firstNonNegativeColumn = j;
+                break;
+            }
+        }
+
+        // Виведення відсортованої матриці та номера першого стовпця без від'ємних елементів
+        Console.WriteLine("Відсортована матриця:");
+
+        for (int i = 0; i < rows; i++)
+        {
+            for (int j = 0; j < columns; j++)
+            {
+                Console.Write(matrix[i, j] + "\t");
+            }
+            Console.WriteLine();
+        }
+
+        if (firstNonNegativeColumn >= 0)
+        {
+            Console.WriteLine($"Номер першого стовпця без від'ємних елементів: {firstNonNegativeColumn}");
+        }
+        else
+        {
+            Console.WriteLine("У матриці немає стовпців без від'ємних елементів.");
+        }
+    }
+}
