@@ -1,0 +1,71 @@
+//1 завдання
+
+using System;
+
+class Program
+{
+
+    static void Main()
+    {
+        Console.OutputEncoding = System.Text.Encoding.Default;
+        Console.Write("Введiть кiлькiсть елементiв у масивi: ");
+        int n = int.Parse(Console.ReadLine());
+
+        double[] arr = new double[n];
+
+        for (int i = 0; i < n; i++)
+        {
+            Console.Write($"Введiть {i + 1}-й елемент: ");
+            arr[i] = double.Parse(Console.ReadLine());
+        }
+
+        double sumOfPositiveIndices = 0;
+        double sumOfModulesAfterFirstPositive = 0;
+        bool firstPositiveFound = false;
+
+        Console.Write("Введiть значення a: ");
+        double a = double.Parse(Console.ReadLine());
+
+        Console.Write("Введuть значення b: ");
+        double b = double.Parse(Console.ReadLine());
+
+        Array.Sort(arr, (x, y) =>
+        {
+            if ((x >= a && x <= b) && !(y >= a && y <= b))
+            {
+                return -1;
+            }
+            else if (!(x >= a && x <= b) && (y >= a && y <= b))
+            {
+                return 1;
+            }
+            else
+            {
+                return x.CompareTo(y); 
+            }
+        });
+
+        for (int i = 0; i < n; i++)
+        {
+            if (arr[i] > 0)
+            {
+                sumOfPositiveIndices += i;
+                if (!firstPositiveFound)
+                {
+                    firstPositiveFound = true;
+                }
+                else
+                {
+                    sumOfModulesAfterFirstPositive += Math.Abs(arr[i]);
+                }
+            }
+        }
+
+        Console.WriteLine($"Сума iндексiв додатних елементiв: {sumOfPositiveIndices}");
+        Console.WriteLine($"Сума модулiв елементiв пiсля першого додатного: {sumOfModulesAfterFirstPositive}");
+    }
+}
+
+
+
+
